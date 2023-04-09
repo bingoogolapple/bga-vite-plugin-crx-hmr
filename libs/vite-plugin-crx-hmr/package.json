@@ -1,0 +1,60 @@
+{
+  "name": "@bgafe/vite-plugin-crx-hmr",
+  "description": "用于开发 Chrome manifest v3 插件的 Vite 插件，主要提供热重载功能，快速更新，高效开发",
+  "private": false,
+  "version": "0.0.4",
+  "type": "module",
+  "keywords": [
+    "crx",
+    "chrome",
+    "extensions",
+    "hmr",
+    "manifest v3",
+    "热更新"
+  ],
+  "files": [
+    "dist"
+  ],
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public",
+    "module": "dist/index.es.js",
+    "types": "dist/index.d.ts"
+  },
+  "exports": {
+    "import": "./dist/index.es.js"
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "release": "pnpm build && pnpm publish"
+  },
+  "dependencies": {
+    "chokidar": "^3.5.3",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.228",
+    "@types/node": "^18.15.0",
+    "@types/ws": "^8.5.4",
+    "rollup": "^3.20.2",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4",
+    "vite-plugin-dts": "^2.1.0"
+  },
+  "peerDependencies": {
+    "vite": "^4.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr.git",
+    "directory": "libs/vite-plugin-crx-hmr"
+  },
+  "homepage": "https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr#readme",
+  "bugs": {
+    "url": "https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr/issues"
+  },
+  "author": "bingoogolapple <bingoogolapple@gmail.com>",
+  "license": "MIT"
+}

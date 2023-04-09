@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "moduleResolution": "Node",
+    "strict": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "types": [
+      "vite/client",
+      "chrome"
+    ],
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "bga-vite-plugin-crx-hmr",
+  "private": true,
+  "version": "1.0.0",
+  "description": "用于开发 Chrome 插件的 Vite 插件"
+}
