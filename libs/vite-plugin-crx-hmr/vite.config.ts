@@ -32,7 +32,7 @@ export default defineConfig((): UserConfig => {
         fileName: (format) => `index.${format}.js`,
       },
       rollupOptions: {
-        external: ['fs', 'path', 'http', 'url', 'ws', 'vite', 'rollup'],
+        external: ['fs', 'path', 'http', 'url', 'events', 'ws', 'vite', 'rollup'],
       },
     },
   }
