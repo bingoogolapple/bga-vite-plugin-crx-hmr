@@ -68,6 +68,7 @@ export const getCrxBuildConfig = ({
       popup: resolve(viteDirname, 'src/entries/popup/popup.html'),
       options: resolve(viteDirname, 'src/entries/options/options.html'),
       newtab: resolve(viteDirname, 'src/entries/newtab/newtab.html'),
+      sidepanel: resolve(viteDirname, 'src/entries/sidepanel/sidepanel.html'),
       devtools: resolve(viteDirname, 'src/entries/devtools/devtools.html'),
       'devtools-panel': resolve(
         viteDirname,

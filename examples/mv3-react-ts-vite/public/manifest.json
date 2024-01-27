@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "mv3-react-ts-vite",
-    "description": "Chrome 插件开发学习笔记",
+    "description": "Chromium 插件开发学习笔记",
     "version": "1.0.0",
     "icons": {
         "16": "images/16.png",
@@ -11,6 +11,7 @@
     },
     "permissions": [
         "storage",
+        "sidePanel",
         "activeTab",
         "scripting",
         "cookies",
@@ -40,6 +41,9 @@
             "128": "images/128.png"
         },
         "default_title": "默认使用的是name，这里自定义一下react"
+    },
+    "side_panel": {
+        "default_path": "src/entries/sidepanel/sidepanel.html"
     },
     "content_scripts": [
         {
