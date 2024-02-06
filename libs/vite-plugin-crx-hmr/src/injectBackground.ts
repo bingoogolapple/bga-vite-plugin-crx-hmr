@@ -3,45 +3,50 @@ const crxHmrPort = 54321
 const getCurrentTab = async () => {
   const [tab] = await chrome.tabs.query({
     active: true,
-    lastFocusedWindow: true,
-    // currentWindow: true,
+    currentWindow: true,
+    // lastFocusedWindow: true,
   })
   if (!tab) {
-    console.log('background getCurrentTab::', '当前 tab 内容为空')
+    console.log('background getCurrentTab::', '当前 tab 为空')
     return
   }
-  console.log('background getCurrentTab::', '当前 tab 为', JSON.stringify(tab))
   if (!tab.id) {
     console.log('background getCurrentTab::', '当前 tab 没有 id')
     return
   }
+  console.log('background getCurrentTab::', '当前 tab 为', JSON.stringify(tab))
   return tab
 }
 
-const reloadContent = async () => {
+const reloadContent = async (webSocketClient: WebSocket) => {
   const tab = await getCurrentTab()
-  if (!tab || !tab.id) {
+  if (!tab) {
     return
   }
 
-  chrome.scripting
-    .executeScript({
-      target: { tabId: tab.id },
-      files: ['assets/content.js'],
-    })
-    .then((results) => {
-      for (const result of results) {
-        console.log(
-          'background reloadContent::',
-          '注入脚本成功',
-          JSON.stringify(result)
-        )
+  // content 修改后需要 chrome.runtime.reload() 后才会生效，所以需要先注入延时刷新脚本，注入成功后再执行 chrome.runtime.reload()
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: tab.id! },
+      func: () => {
+        // 注入脚本后延时刷新
+        setTimeout(() => {
+          window.location.reload()
+        }, 200);
+      },
+      args: [],
+    },
+    (injectionResults) => {
+      for (const frameResult of injectionResults) {
+        console.log('注入刷新页面脚本成功：' + JSON.stringify(frameResult))
       }
-    })
-    .catch((e) => {
-      console.log('background reloadContent::', '注入脚本失败', e)
-    })
+
+      webSocketClient.close()
+      chrome.runtime.reload()
+    }
+  )
 }
+
 const reloadPage = async () => {
   // const tab = await getCurrentTab()
   // if (!tab) {
@@ -49,12 +54,12 @@ const reloadPage = async () => {
   // }
 
   // 这种方式只能刷新当前选中的 tab，不支持自动刷新 popup、devtools、devtools-panel
-  // chrome.tabs.reload(tab.id)
+  // chrome.tabs.reload(tab.id!)
 
   // 这种方式没权限刷新所有的 page
   // chrome.scripting
   //   .executeScript({
-  //     target: { tabId: tab.id },
+  //     target: { tabId: tab.id! },
   //     func: () => window.location.reload(),
   //   })
   //   .then((results) => {
@@ -96,15 +101,14 @@ export const initCrxHmrWebSocket = () => {
         '收到更新 background.js 消息，关闭 ws 并重新加载'
       )
       webSocketClient.close()
-      setTimeout(() => {
-        chrome.runtime.reload()
-      }, 500)
+      chrome.runtime.reload()
     } else if (data === 'CONTENT_CHANGED') {
       console.log(
         'background initWebSocketClient::',
-        '收到更新 content.js 消息'
+        '收到更新 content 消息'
       )
-      reloadContent()
+
+      reloadContent(webSocketClient)
     } else if (data === 'PAGE_CHANGED') {
       console.log('background initWebSocketClient::', '收到更新页面消息')
       reloadPage()
