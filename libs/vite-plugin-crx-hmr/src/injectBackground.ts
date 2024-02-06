@@ -18,7 +18,7 @@ const getCurrentTab = async () => {
   return tab
 }
 
-const reloadContent = async (webSocketClient: WebSocket | null) => {
+const reloadIife = async (webSocketClient: WebSocket | null) => {
   const tab = await getCurrentTab()
   if (!tab) {
     return
@@ -135,13 +135,13 @@ export const initCrxHmrWebSocket = (retryCount: number) => {
       )
       hmrWebSocketClient?.close()
       chrome.runtime.reload()
-    } else if (data === 'CONTENT_CHANGED') {
+    } else if (data === 'IIFE_CHANGED') {
       console.log(
         'background initWebSocketClient::',
-        '收到更新 content 消息'
+        '收到更新 iife 消息'
       )
 
-      reloadContent(hmrWebSocketClient)
+      reloadIife(hmrWebSocketClient)
     } else if (data === 'PAGE_CHANGED') {
       console.log('background initWebSocketClient::', '收到更新页面消息')
       reloadPage()
@@ -149,7 +149,7 @@ export const initCrxHmrWebSocket = (retryCount: number) => {
   }
 }
 
-chrome.runtime.onMessage.addListener((request, sender, _sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   if (request?.mode === 'background' && request?.action === 'initCrxHmrWebSocket') {
     if (hmrWebSocketClient) {
       console.log('background', '已经存在 hmrWebSocketClient')

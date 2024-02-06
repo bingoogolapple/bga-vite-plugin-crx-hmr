@@ -1,4 +1,4 @@
-// 该行为热更新自动生成1707238550122请勿修改
+// 该行为热更新自动生成1707248323514请勿修改
 
 import { testChrome } from '../../utils/chrome-utils'
 testChrome('background')
@@ -24,6 +24,10 @@ chrome.runtime.onConnect.addListener((port) => {
     console.log('background port.onMessage', msg)
     port.postMessage('我是来自 background port.onMessage 的消息')
   })
+})
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('background chrome.runtime.onMessage', message, sender)
 })
 
 // import '../../../scripts/crx-hmr-plugin/injectBackground'

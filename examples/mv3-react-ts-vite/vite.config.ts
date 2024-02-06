@@ -8,8 +8,8 @@ import { resolve } from 'path'
 
 // https://cn.vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
-  console.log('process.env.CRX_ENV', mode, process.env.CRX_ENV)
-  const isDev = process.env.CRX_ENV === 'development'
+  console.log('process.env.NODE_ENV', process.env.NODE_ENV, mode)
+  const isDev = process.env.NODE_ENV === 'development'
 
   const plugins: PluginOption[] = [react()]
   if (isDev) {

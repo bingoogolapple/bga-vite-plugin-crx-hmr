@@ -1,12 +1,28 @@
+// 不指定 world 时，默认就是 ISOLATED
+
 // 这里需要 import 一下 content.css，否则不会被打包
 import './content.css'
 
 import { testChrome } from '../../utils/chrome-utils'
 testChrome('content')
 
-// 动态加载文件时需要在 manifest.json -> web_accessible_resources 中配置
-let jsPath = 'assets/inject.js'
-let temp = document.createElement('script')
-temp.src = chrome.runtime.getURL(jsPath)
-temp.setAttribute('type', 'text/javascript')
-document.head.appendChild(temp)
+// @ts-ignore
+console.log('content window.testName', window.testName)
+// @ts-ignore
+window.testName = 'content'
+
+let checkHeadIntervalId = setInterval(() => {
+    if (document.head) {
+        console.log('在 content.ts 中注入 inject.ts')
+        clearInterval(checkHeadIntervalId)
+
+        // 动态加载文件时需要在 manifest.json -> web_accessible_resources 中配置
+        let jsPath = 'assets/inject.js'
+        let temp = document.createElement('script')
+        temp.setAttribute('type', 'text/javascript')
+        temp.src = chrome.runtime.getURL(jsPath)
+        document.head.appendChild(temp)
+    }
+}, 50)
+
+chrome.runtime.sendMessage({ 'type': 'content' })

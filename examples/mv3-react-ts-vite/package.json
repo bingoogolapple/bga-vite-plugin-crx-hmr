@@ -7,10 +7,12 @@
     "build": "concurrently \"pnpm:build:*\"",
     "build:background": "vite build --mode background",
     "build:page": "vite build --mode page",
-    "build:content": "vite build --mode content",
-    "build:inject": "vite build --mode inject",
-    "dev": "rimraf dist && tsc && cross-env CRX_ENV=development pnpm build",
-    "release": "rimraf dist && tsc && cross-env CRX_ENV=production pnpm build"
+    "build:content": "cross-env CRX_IIFE_NAME=content vite build --mode iife",
+    "build:content-main": "cross-env CRX_IIFE_NAME=content-main vite build --mode iife",
+    "build:content-isolated": "cross-env CRX_IIFE_NAME=content-isolated vite build --mode iife",
+    "build:inject": "cross-env CRX_IIFE_NAME=inject vite build --mode iife",
+    "dev": "rimraf dist && tsc && cross-env NODE_ENV=development pnpm build",
+    "release": "rimraf dist && tsc && cross-env NODE_ENV=production pnpm build"
   },
   "dependencies": {
     "react": "^18.2.0",

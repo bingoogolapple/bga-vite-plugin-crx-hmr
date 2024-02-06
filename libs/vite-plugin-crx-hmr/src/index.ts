@@ -21,7 +21,7 @@ const parseMode = (mode: string) => {
   let isIife = false
   let isBackground = false
   let isPage = false
-  if (['content', 'inject'].includes(mode)) {
+  if (['iife'].includes(mode)) {
     isIife = true
   } else if (['background'].includes(mode)) {
     isBackground = true
@@ -53,13 +53,35 @@ export const getCrxBuildConfig = ({
   let input: Record<string, string> = {}
   let format: 'esm' | 'iife' = 'esm'
   const { isBackground, isIife } = parseMode(mode)
+  const iifeName = process.env.CRX_IIFE_NAME
+  if (isIife && !iifeName) {
+    throw new Error('mode 为 iife 时需要在 package.json scripts 对应脚本中指定 process.env.CRX_IIFE_NAME 参数')
+  }
+
   if (isBackground) {
     input = {
       [mode]: resolve(viteDirname, `src/entries/${mode}/${mode}.ts`),
     }
   } else if (isIife) {
+    // format 为 iife 时不支持有多个 input
+    // input = { ...iifeInput }
+    // const defaultIifeInput = [
+    //   'content',
+    //   'content-main',
+    //   'content-isolated',
+    //   'inject',
+    //   'user-script',
+    // ]
+    // defaultIifeInput.forEach((key) => {
+    //   const iifePath = resolve(viteDirname, `src/entries/${key}/${key}.ts`)
+    //   if (!input[key] && fs.existsSync(iifePath)) {
+    //     input[key] = iifePath
+    //   }
+    // })
+
+
     input = {
-      [mode]: resolve(viteDirname, `src/entries/${mode}/${mode}.ts`),
+      [iifeName!]: resolve(viteDirname, `src/entries/${iifeName}/${iifeName}.ts`),
     }
     format = 'iife'
   } else {
@@ -126,9 +148,9 @@ export const getCrxBuildConfig = ({
          * 0、默认值为 'assets/[name]-[hash][extname]'
          */
         assetFileNames: (_chunkInfo: PreRenderedAsset) => {
-          // console.log(`assetFileName ${chunkInfo.name}`)
-          if (mode === 'content') {
-            return `assets/content[extname]`
+          // console.log(`assetFileName ${JSON.stringify(_chunkInfo)}`)
+          if (mode === 'iife') {
+            return `assets/${iifeName}[extname]`
           }
           return `assets/[name][extname]`
         },
@@ -286,8 +308,8 @@ const initWebSocketServer = () => {
 
       webSocket.on('message', (message) => {
         const info = `${message}`
-        if (info === 'CONTENT_CHANGED') {
-          logServer('监听到 content 代码变化，通知客户端重新加载')
+        if (info === 'IIFE_CHANGED') {
+          logServer('监听到 iife 代码变化，通知客户端重新加载')
           webSocketServer?.clients.forEach((ws) => {
             ws.send(info)
           })
@@ -377,7 +399,7 @@ const initWebSocketClient = (mode: string) => {
       'handleClientChanged => 通过 WebSocket 触发 client 重新加载'
     )
     if (isIife) {
-      webSocketClient.send('CONTENT_CHANGED')
+      webSocketClient.send('IIFE_CHANGED')
     } else if (isPage) {
       webSocketClient.send('PAGE_CHANGED')
     }
