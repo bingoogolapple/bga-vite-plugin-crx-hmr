@@ -2,7 +2,12 @@
 // https://learn.microsoft.com/zh-cn/microsoft-edge/extensions-chromium/developer-guide/sidebar
 
 function App() {
-  return <h1>sidepanel</h1>
+  return (
+    <div>
+      <h1>side-panel</h1>
+      <ul>{Object.keys(chrome).map(item => <li>{item}</li>)}</ul>
+    </div>
+  )
 }
 
 export default App

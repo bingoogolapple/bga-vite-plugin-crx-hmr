@@ -64,20 +64,23 @@ export const getCrxBuildConfig = ({
     format = 'iife'
   } else {
     input = { ...pageInput }
-    const defaultPageInput: Record<string, string> = {
-      popup: resolve(viteDirname, 'src/entries/popup/popup.html'),
-      options: resolve(viteDirname, 'src/entries/options/options.html'),
-      newtab: resolve(viteDirname, 'src/entries/newtab/newtab.html'),
-      sidepanel: resolve(viteDirname, 'src/entries/sidepanel/sidepanel.html'),
-      devtools: resolve(viteDirname, 'src/entries/devtools/devtools.html'),
-      'devtools-panel': resolve(
-        viteDirname,
-        'src/entries/devtools-panel/devtools-panel.html'
-      ),
-    }
-    Object.keys(defaultPageInput).forEach((key) => {
-      if (!input[key] && fs.existsSync(defaultPageInput[key])) {
-        input[key] = defaultPageInput[key]
+    const defaultPageInput = [
+      'popup',
+      'options',
+      'newtab',
+      'side-panel',
+      'elements-sidebar-pane',
+      'devtools',
+      'devtools-panel',
+      'history',
+      'sandbox',
+      'main',
+      'update-version',
+    ]
+    defaultPageInput.forEach((key) => {
+      const pagePath = resolve(viteDirname, `src/entries/${key}/${key}.html`)
+      if (!input[key] && fs.existsSync(pagePath)) {
+        input[key] = pagePath
       }
     })
   }
@@ -439,7 +442,8 @@ export const crxHmrPlugin = ({ mode }: IProps): PluginOption => {
           resolve(__dirname, 'injectBackground.ts'),
           'utf-8'
         )
-        return code + injectDevCode
+        // 加个 \n 换行，避免原始代码最后无空行并且最后一行不是分号结尾时报错
+        return code + '\n' + injectDevCode
       } else if (
         isPage &&
         resolvedInput.includes(id.substring(0, id.lastIndexOf('.'))) && !id.includes('.html')
@@ -450,7 +454,7 @@ export const crxHmrPlugin = ({ mode }: IProps): PluginOption => {
           'utf-8'
         )
         injectDevCode = injectDevCode.replace('{pageNamePlaceholder}', id.substring(id.lastIndexOf('/') + 1, id.lastIndexOf('.')))
-        return code + injectDevCode
+        return code + '\n' + injectDevCode
       }
       return code
     },

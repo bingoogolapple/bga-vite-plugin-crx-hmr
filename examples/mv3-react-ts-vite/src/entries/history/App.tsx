@@ -1,7 +1,7 @@
 function App() {
   return (
     <div>
-      <h1>devtools-panel</h1>
+      <h1>history</h1>
       <ul>{Object.keys(chrome).map(item => <li>{item}</li>)}</ul>
     </div>
   )

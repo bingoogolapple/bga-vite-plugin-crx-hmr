@@ -20,7 +20,19 @@ chrome.devtools.panels.create(
   'BGA面板',
   'images/32.png',
   'src/entries/devtools-panel/devtools-panel.html',
-  (panel: any) => {
+  (panel: chrome.devtools.panels.ExtensionPanel) => {
     console.log('devtools BGA面板创建成功', panel)
+  }
+)
+
+// 创建 SidebarPane
+chrome.devtools.panels.elements.createSidebarPane(
+  "BGA Sidebar",
+  (sidebarPane: chrome.devtools.panels.ExtensionSidebarPane) => {
+    // 直接展示 kv 列表
+    // sidebarPane.setObject({ some_data: "Some data to show" })
+
+    // 展示独立页面
+    sidebarPane.setPage(chrome.runtime.getURL('src/entries/elements-sidebar-pane/elements-sidebar-pane.html'))
   }
 )
