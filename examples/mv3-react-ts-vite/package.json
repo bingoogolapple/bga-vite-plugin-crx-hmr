@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "concurrently \"pnpm:build:background\" \"pnpm:build:page\" \"pnpm:build:content\" \"pnpm:build:inject\"",
+    "build": "concurrently \"pnpm:build:*\"",
     "build:background": "vite build --mode background",
     "build:page": "vite build --mode page",
     "build:content": "vite build --mode content",

@@ -6,5 +6,6 @@ export const initHmrListener = async () => {
       window.location.reload()
     }
   })
+  chrome.runtime.sendMessage({ mode: 'background', action: 'initCrxHmrWebSocket' })
 }
 initHmrListener()

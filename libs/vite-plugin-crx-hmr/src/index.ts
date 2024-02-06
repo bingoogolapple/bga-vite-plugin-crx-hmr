@@ -4,11 +4,11 @@ import WebSocket, { WebSocketServer } from 'ws'
 import fs from 'fs'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import type { IncomingMessage } from 'http'
 import watch from 'watch'
 import {
   copyFolderRecursive,
   deleteFolderRecursive,
+  getQueryString,
   // killProcessByPort,
 } from './utils'
 // import chokidar from 'chokidar'
@@ -168,29 +168,24 @@ const logServer = (...args: any[]) =>
 const logClient = (...args: any[]) =>
   console.log('WebSocketServerClient::', ...args)
 
-const getQueryString = (req: IncomingMessage, name: string) => {
-  const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
-  const r = req.url?.substr(2).match(reg)
-  if (r != null) {
-    return decodeURIComponent(r[2])
-  }
-  return null
-}
-
+// 初始化开发期间 WebSocket 服务端
 const initWebSocketServer = () => {
   let webSocketServer: WebSocketServer | null = null
 
+  // 发送 BACKGROUND_CHANGED 通知 injectBackground.ts 执行 chrome.runtime.reload()
   const handleServerChanged = () => {
     if (webSocketServer === null) {
       logServer('handleServerChanged => 无 webSocketServer')
       return
     }
 
-    logServer('handleServerChanged => 通过 WebSocket 触发 server 重新加载')
+    logServer('handleServerChanged => 通过 WebSocket 触发 background 重新加载')
     webSocketServer.clients.forEach((webSocket) => {
       webSocket.send('BACKGROUND_CHANGED')
     })
   }
+
+  // 监听到 public 目录变更时在 dist 目录中同步更新，然后发送 BACKGROUND_CHANGED 通知 injectBackground.ts 处理刷新操作
   const watchPublicDir = () => {
     logServer('监听 public 目录变更', resolve(viteDirname, 'public'))
 
@@ -274,6 +269,8 @@ const initWebSocketServer = () => {
     //     handleServerChanged()
     //   })
   }
+
+  // 启动开发期间的 WebSocket 服务端，服务端收到文件变更消息后会分发给 injectBackground.ts 处理刷新操作
   const startWebSocketServer = () => {
     watchPublicDir()
 
@@ -283,11 +280,6 @@ const initWebSocketServer = () => {
     webSocketServer.on('connection', (webSocket, req) => {
       const mode = getQueryString(req, 'mode')
       logServer('收到新的客户端连接', mode, req.url)
-      webSocket.send('heartbeatMonitor')
-      const interval = setInterval(() => {
-        // logServer('发送心跳')
-        webSocket.send('heartbeat')
-      }, 3000)
 
       webSocket.on('message', (message) => {
         const info = `${message}`
@@ -301,12 +293,32 @@ const initWebSocketServer = () => {
           webSocketServer?.clients.forEach((ws) => {
             ws.send(info)
           })
+        } else if (info === 'BACKGROUND_CHANGED') {
+          logServer('监听到 hmrPlugin 代码变化，通知客户端重新加载')
+
+          // 这种方式没用，因为根本就没有重新构建 background
+          // handleServerChanged()
+
+          // 通过修改 background.ts 的首行注释内容来主动触发 background 构建
+          const backgroundTsPath = resolve(viteDirname, `src/entries/background/background.ts`)
+          fs.readFile(backgroundTsPath, 'utf8', (err, data) => {
+            if (err) {
+              return
+            }
+
+            let result = data
+            if (result.startsWith('// 该行为热更新自动生成')) {
+              result = result.replace(/该行为热更新自动生成\d{10,20}请勿修改/g, `该行为热更新自动生成${new Date().getTime()}请勿修改`)
+            } else {
+              result = `// 该行为热更新自动生成${new Date().getTime()}请勿修改\n\n${result}`
+            }
+            fs.writeFileSync(backgroundTsPath, result)
+          })
         }
       })
 
       webSocket.on('close', () => {
-        logServer('断开连接，停止发送心跳')
-        clearInterval(interval)
+        logServer(`${mode} 断开连接，停止发送心跳`)
       })
     })
   }
@@ -315,9 +327,13 @@ const initWebSocketServer = () => {
     handleServerChanged,
   }
 }
+
+// 初始化开发期间 WebSocket 客户端
 const initWebSocketClient = (mode: string) => {
   let webSocketClient: WebSocket | null = null
   let isReady = false
+
+  // 链接到 WebSocket 服务端，链接失败时等 1s 再自动重连
   const connectWebSocketServer = () => {
     if (webSocketClient || isReady) {
       return
@@ -327,16 +343,17 @@ const initWebSocketClient = (mode: string) => {
       webSocketClient = new WebSocket(
         `ws://127.0.0.1:${crxHmrPort}?mode=${mode}`
       )
-      webSocketClient.addEventListener('open', (_event) => {
+      webSocketClient.onopen = (_event) => {
         logClient(mode, 'connectWebSocketServer => 成功')
         isReady = true
-      })
+      }
     } catch (e) {
       logClient(mode, 'connectWebSocketServer => 失败', e)
       webSocketClient = null
       setTimeout(connectWebSocketServer, 1000)
     }
   }
+  // 发送客户端文件变更消息给服务端，服务端收到文件变更消息后会分发给 injectBackground.ts 处理刷新操作
   const handleClientChanged = ({
     isIife,
     isPage,
@@ -347,7 +364,7 @@ const initWebSocketClient = (mode: string) => {
     if (!webSocketClient || !isReady) {
       logClient(
         mode,
-        'handleClientChanged => 无 webSocketClient 或未连接到服务器'
+        'handleClientChanged => 无 webSocketClient 或未连接到服务端'
       )
       return
     }
@@ -372,7 +389,13 @@ interface IProps {
   mode: string
 }
 
-export const cxrHmrPlugin = ({ mode }: IProps): PluginOption => {
+/**
+ * hmr 插件
+ * 1、启动文件监听服务
+ * 2、打包期间注入 injectBackground.ts 和 injectPage.ts
+ * 3、打包完成后发消息通知 injectBackground.ts 文件变更
+ */
+export const crxHmrPlugin = ({ mode }: IProps): PluginOption => {
   const { isBackground, isIife, isPage } = parseMode(mode)
 
   // if (isBackground) {
@@ -408,8 +431,10 @@ export const cxrHmrPlugin = ({ mode }: IProps): PluginOption => {
         setTimeout(connectWebSocketServer, 2000)
       }
     },
+    // 给 background.ts 注入 injectBackground.ts 或者给 page 的入口 ts/tsx 文件注入 injectPage.ts
     transform(code, id, _options) {
       if (isBackground && id.includes('background/background.ts')) {
+        console.log(`给 ${id} 注入 injectBackground.ts`)
         const injectDevCode = fs.readFileSync(
           resolve(__dirname, 'injectBackground.ts'),
           'utf-8'
@@ -419,6 +444,7 @@ export const cxrHmrPlugin = ({ mode }: IProps): PluginOption => {
         isPage &&
         resolvedInput.includes(id.substring(0, id.lastIndexOf('.'))) && !id.includes('.html')
       ) {
+        console.log(`给 ${id} 注入 injectPage.ts`)
         let injectDevCode = fs.readFileSync(
           resolve(__dirname, 'injectPage.ts'),
           'utf-8'
@@ -428,6 +454,7 @@ export const cxrHmrPlugin = ({ mode }: IProps): PluginOption => {
       }
       return code
     },
+    // 打包完成后通知服务端(background)或客户端(page、iife)代码更新
     writeBundle() {
       if (isBackground) {
         handleServerChanged()

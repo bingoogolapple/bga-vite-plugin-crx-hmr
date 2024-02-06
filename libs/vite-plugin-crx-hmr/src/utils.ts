@@ -1,5 +1,6 @@
 import child_process from 'child_process'
 import fs from 'fs'
+import type { IncomingMessage } from 'http'
 
 export const killProcessByPort = (port: number) => {
     var lsofCommand = child_process.spawn('lsof', [
@@ -63,4 +64,13 @@ export const copyFolderRecursive = (src: string, dest: string) => {
             fs.copyFileSync(srcFile, destFile)
         }
     })
+}
+
+export const getQueryString = (req: IncomingMessage, name: string) => {
+    const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+    const r = req.url?.substring(2).match(reg)
+    if (r != null) {
+        return decodeURIComponent(r[2])
+    }
+    return null
 }

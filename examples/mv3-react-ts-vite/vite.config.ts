@@ -1,7 +1,7 @@
 import { defineConfig, PluginOption } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import {
-  cxrHmrPlugin,
+  crxHmrPlugin,
   getCrxBuildConfig,
 } from '@bgafe/vite-plugin-crx-hmr'
 import { resolve } from 'path'
@@ -13,7 +13,7 @@ export default defineConfig(async ({ mode }) => {
 
   const plugins: PluginOption[] = [react()]
   if (isDev) {
-    plugins.push(cxrHmrPlugin({ mode }))
+    plugins.push(crxHmrPlugin({ mode }))
   }
 
   const crxBuildConfig = getCrxBuildConfig({

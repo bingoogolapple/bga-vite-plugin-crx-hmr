@@ -1,3 +1,5 @@
+// 该行为热更新自动生成1707226033015请勿修改
+
 import { testChrome } from '../../utils/chrome-utils'
 testChrome('background')
 

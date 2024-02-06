@@ -18,7 +18,7 @@ const getCurrentTab = async () => {
   return tab
 }
 
-const reloadContent = async (webSocketClient: WebSocket) => {
+const reloadContent = async (webSocketClient: WebSocket | null) => {
   const tab = await getCurrentTab()
   if (!tab) {
     return
@@ -32,7 +32,7 @@ const reloadContent = async (webSocketClient: WebSocket) => {
         // 注入脚本后延时刷新
         setTimeout(() => {
           window.location.reload()
-        }, 200);
+        }, 200)
       },
       args: [],
     },
@@ -41,7 +41,7 @@ const reloadContent = async (webSocketClient: WebSocket) => {
         console.log('注入刷新页面脚本成功：' + JSON.stringify(frameResult))
       }
 
-      webSocketClient.close()
+      webSocketClient?.close()
       chrome.runtime.reload()
     }
   )
@@ -78,29 +78,62 @@ const reloadPage = async () => {
   // 这种方式会通知所有的 page
   chrome.runtime.sendMessage({ mode: 'page', action: 'reload' })
 }
-export const initCrxHmrWebSocket = () => {
-  console.log('background initWebSocketClient::', '初始化 webSocketClient')
-  const webSocketClient = new WebSocket(
+
+let hmrWebSocketClient: WebSocket | null
+let keepAliveIntervalId: NodeJS.Timeout | null
+
+const clearKeepAliveInterval = () => {
+  if (keepAliveIntervalId) {
+    clearInterval(keepAliveIntervalId)
+    keepAliveIntervalId = null
+  }
+}
+
+export const initCrxHmrWebSocket = (retryCount: number) => {
+  console.log('background initWebSocketClient::', '初始化 webSocketClient', retryCount)
+
+  hmrWebSocketClient = new WebSocket(
     `ws://127.0.0.1:${crxHmrPort}?mode=background`
   )
-  setTimeout(() => {
-    if (webSocketClient.readyState === WebSocket.CLOSED) {
-      console.log('background initWebSocketClient::', '初始化 webSocketClient 失败')
-    }
-  }, 1500)
-  webSocketClient.onopen = (event) => {
-    console.log('background initWebSocketClient::', '初始化 webSocketClient 成功', event)
+
+  // 1、定时发送心跳包，避免开发期间 Server Worker 休眠
+  // 2、开发服务器重连检测
+  keepAliveIntervalId = setInterval(
+    () => {
+      if (hmrWebSocketClient) {
+        console.log('background initWebSocketClient::', '发送 keepalive')
+        hmrWebSocketClient.send('keepalive')
+      } else {
+        clearKeepAliveInterval()
+
+        // 这里只检测 5 次，因为即使这里超过了检测次数，后续手动刷新任意页面时 injectPage.ts 中也会触发重新检测连接开发服务器
+        if (retryCount < 5) {
+          console.log('background initWebSocketClient::', '尝试重连')
+          initCrxHmrWebSocket(retryCount + 1)
+        } else {
+          console.log('background initWebSocketClient::', '超过最大次数，不再重连')
+        }
+      }
+    },
+    3 * 1000
+  )
+
+  hmrWebSocketClient.onopen = (event) => {
+    console.log('background initWebSocketClient::', 'onopen', event)
+  }
+  hmrWebSocketClient.onclose = (event) => {
+    console.log('background initWebSocketClient::', 'onclose', event)
+    hmrWebSocketClient = null
   }
 
-  let isAlive = true
-  webSocketClient.addEventListener('message', (e) => {
+  hmrWebSocketClient.onmessage = (e) => {
     const { data } = e
     if (data === 'BACKGROUND_CHANGED') {
       console.log(
         'background initWebSocketClient::',
         '收到更新 background.js 消息，关闭 ws 并重新加载'
       )
-      webSocketClient.close()
+      hmrWebSocketClient?.close()
       chrome.runtime.reload()
     } else if (data === 'CONTENT_CHANGED') {
       console.log(
@@ -108,54 +141,24 @@ export const initCrxHmrWebSocket = () => {
         '收到更新 content 消息'
       )
 
-      reloadContent(webSocketClient)
+      reloadContent(hmrWebSocketClient)
     } else if (data === 'PAGE_CHANGED') {
       console.log('background initWebSocketClient::', '收到更新页面消息')
       reloadPage()
-    } else if (data === 'heartbeatMonitor') {
-      console.log(
-        'background initWebSocketClient::',
-        'heartbeatMonitor'
-      )
-      isAlive = true
-      const interval = setInterval(() => {
-        if (!isAlive) {
-          console.log(
-            'background initWebSocketClient::',
-            'heartbeatMonitor 非激活状态 => 重连来探测服务的是否在线'
-          )
-          const detectWs = new WebSocket(
-            `ws://127.0.0.1:${crxHmrPort}?mode=backgroundDetect`
-          )
-          setTimeout(() => {
-            if (detectWs.readyState === WebSocket.CLOSED) {
-              console.log(
-                'background initWebSocketClient::',
-                'heartbeatMonitor 非激活状态 => 重连来探测服务的是否在线 => 不在线，清除定时任务'
-              )
-              clearInterval(interval)
-            }
-          }, 1500)
-          detectWs.onopen = (event) => {
-            console.log(
-              'background initWebSocketClient::',
-              'heartbeatMonitor 非激活状态 => 重连来探测服务的是否在线 => 在线',
-              event
-            )
-            detectWs.close()
-            webSocketClient.close()
-            clearInterval(interval)
-            initCrxHmrWebSocket()
-          }
-        }
-      }, 3000)
-    } else if (data === 'heartbeat') {
-      console.log('background initWebSocketClient::', 'heartbeat')
-      isAlive = true
-      setTimeout(() => {
-        isAlive = false
-      }, 2500)
     }
-  })
+  }
 }
-initCrxHmrWebSocket()
+
+chrome.runtime.onMessage.addListener((request, sender, _sendResponse) => {
+  if (request?.mode === 'background' && request?.action === 'initCrxHmrWebSocket') {
+    if (hmrWebSocketClient) {
+      console.log('background', '已经存在 hmrWebSocketClient')
+    } else {
+      console.log('background', '不存在 hmrWebSocketClient')
+      clearKeepAliveInterval()
+      initCrxHmrWebSocket(0)
+    }
+  }
+})
+
+initCrxHmrWebSocket(0)
