@@ -2,7 +2,7 @@
   "name": "@bgafe/vite-plugin-crx-hmr",
   "description": "用于开发 Chromium manifest v3 插件的 Vite 插件，主要提供热重载功能，快速更新，高效开发",
   "private": false,
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "keywords": [
     "crx",
@@ -31,8 +31,8 @@
   "scripts": {
     "dev": "nodemon --watch src --ext ts --watch vite.config.ts --exec \"pnpm buildDev\"",
     "buildDev": "tsc && vite build --mode development",
-    "buildProd": "tsc && vite build --mode production",
-    "release": "pnpm buildProd && pnpm publish"
+    "build": "tsc && vite build --mode production",
+    "release": "pnpm build && pnpm publish"
   },
   "dependencies": {
     "events": "^3.3.0",

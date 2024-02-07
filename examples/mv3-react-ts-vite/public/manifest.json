@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "mv3-react-ts-vite",
-  "description": "Chromium 插件开发学习笔记",
+  "description": "Chromium 插件开发学习笔记 - React",
   "version": "1.0.0",
   "icons": {
     "16": "images/16.png",
@@ -28,21 +28,21 @@
     "type": "module"
   },
   "options_ui": {
-    "page": "src/entries/options/options.html",
+    "page": "options.html",
     "open_in_tab": true
   },
   "action": {
-    "default_popup": "src/entries/popup/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "images/16.png",
       "32": "images/32.png",
       "48": "images/48.png",
       "128": "images/128.png"
     },
-    "default_title": "默认使用的是name，这里自定义一下react"
+    "default_title": "默认使用的是 name，这里自定义一下 react"
   },
   "side_panel": {
-    "default_path": "src/entries/side-panel/side-panel.html"
+    "default_path": "side-panel.html"
   },
   "content_scripts": [
     {
@@ -74,11 +74,11 @@
     }
   ],
   "chrome_url_overrides": {
-    "newtab": "src/entries/newtab/newtab.html"
+    "newtab": "newtab.html"
   },
-  "devtools_page": "src/entries/devtools/devtools.html",
+  "devtools_page": "devtools.html",
   "sandbox": {
-    "pages": ["src/entries/sandbox/sandbox.html"]
+    "pages": ["sandbox.html"]
   },
   "omnibox": {
     "keyword": "bga"

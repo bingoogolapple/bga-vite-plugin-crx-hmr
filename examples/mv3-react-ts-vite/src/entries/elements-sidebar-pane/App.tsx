@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
       <h1>elements-sidebar-pane</h1>
-      <ul>{Object.keys(chrome).map(item => <li>{item}</li>)}</ul>
+      <ul>{Object.keys(chrome).map(item => <li key={item}>{item}</li>)}</ul>
     </div>
   )
 }

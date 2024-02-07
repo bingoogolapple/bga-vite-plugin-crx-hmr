@@ -1,4 +1,4 @@
-// 该行为热更新自动生成1707248323514请勿修改
+// 该行为热更新自动生成1707289465453请勿修改
 
 import { testChrome } from '../../utils/chrome-utils'
 testChrome('background')
@@ -7,7 +7,7 @@ chrome.runtime.onInstalled.addListener(async (data: any) => {
   console.log('onInstalled 参数', JSON.stringify(data))
   // {"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"}
   if (data.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    let url = chrome.runtime.getURL('src/entries/options/options.html')
+    let url = chrome.runtime.getURL('options.html')
     let tab = await chrome.tabs.create({ url })
     console.log(`background 安装完后打开选项 tab ${JSON.stringify(tab)}`)
 
@@ -26,7 +26,7 @@ chrome.runtime.onConnect.addListener((port) => {
   })
 })
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {
   console.log('background chrome.runtime.onMessage', message, sender)
 })
 

@@ -6,12 +6,12 @@ function App() {
       eval(`
       alert("我是 sandbox eval alert")
       `)
-    }, 1000);
+    }, 1000)
   }, [])
   return (
     <div>
       <h1>sandbox</h1>
-      <ul>{Object.keys(chrome).map(item => <li>{item}</li>)}</ul>
+      <ul>{Object.keys(chrome).map(item => <li key={item}>{item}</li>)}</ul>
     </div>
   )
 }

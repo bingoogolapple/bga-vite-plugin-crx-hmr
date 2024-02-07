@@ -9,7 +9,7 @@ export const killProcessByPort = (port: number) => {
     ])
     lsofCommand.stdout.on('data', rst => {
         const data = rst.toString('utf8', 0, rst.length)
-        let pid: string | null = null;
+        let pid: string | null = null
         data.split(/[\n|\r]/).forEach((item: string) => {
             if (item.indexOf('LISTEN') !== -1 && !pid) {
                 const reg = item.split(/\s+/)
@@ -25,11 +25,11 @@ export const killProcessByPort = (port: number) => {
         child_process.exec(`kill -9 ${pid}`, (_error, _stdout, _stderr) => {
             console.log(`关闭端口 ${port} 占用的进程 ${pid}`)
         })
-    });
+    })
     lsofCommand.stderr.on('data', rst => {
         const data = rst.toString('utf8', 0, rst.length)
         console.log(`查询占用端口 ${port} 的进程失败`, data)
-    });
+    })
 }
 
 export const deleteFolderRecursive = (path: string) => {
@@ -74,3 +74,21 @@ export const getQueryString = (req: IncomingMessage, name: string) => {
     }
     return null
 }
+
+export const parseMode = (mode: string) => {
+    let isIife = false
+    let isBackground = false
+    let isPage = false
+    if (['iife'].includes(mode)) {
+      isIife = true
+    } else if (['background'].includes(mode)) {
+      isBackground = true
+    } else {
+      isPage = true
+    }
+    return {
+      isIife,
+      isBackground,
+      isPage,
+    }
+  }

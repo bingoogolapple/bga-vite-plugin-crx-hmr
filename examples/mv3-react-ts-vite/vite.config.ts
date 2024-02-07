@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import {
   crxHmrPlugin,
@@ -10,11 +10,6 @@ import { resolve } from 'path'
 export default defineConfig(async ({ mode }) => {
   console.log('process.env.NODE_ENV', process.env.NODE_ENV, mode)
   const isDev = process.env.NODE_ENV === 'development'
-
-  const plugins: PluginOption[] = [react()]
-  if (isDev) {
-    plugins.push(crxHmrPlugin({ mode }))
-  }
 
   const crxBuildConfig = getCrxBuildConfig({
     isDev,
@@ -30,7 +25,7 @@ export default defineConfig(async ({ mode }) => {
         '@': resolve(__dirname, 'src'),
       },
     },
-    plugins,
+    plugins: [react(), crxHmrPlugin({ mode, isDev })],
     build: {
       ...crxBuildConfig,
     },
