@@ -6,17 +6,19 @@
 
 ## 功能介绍
 
-1.主要提供开发期间的热重载能力，监听文件变化后自动编译浏览器插件，并通知插件 background（Service Worker）自动重新加载、自动刷新页面 2.该 Vite 插件内部添加了浏览器插件开发常用多入口配置 3.已自测该 Vite 插件支持使用 React 和 Vue 来开发浏览器插件
+1. 主要提供开发期间的热重载能力，监听文件变化后自动编译浏览器插件，并通知插件 background（Service Worker）自动重新加载、自动刷新页面
+2. 该 Vite 插件内部添加了浏览器插件开发常用多入口配置
+3. 已自测该 Vite 插件支持使用 React 和 Vue 来开发浏览器插件
 
 ## 基本使用
 
-1.安装依赖
+1. 安装依赖
 
 ```shell
 pnpm add @bgafe/vite-plugin-crx-hmr -D
 ```
 
-2.在 vite.config.ts 中使用 crxHmrPlugin
+2. 在 vite.config.ts 中使用 crxHmrPlugin
 
 ```ts
 import { defineConfig } from 'vite'
@@ -32,15 +34,15 @@ export default defineConfig(async ({ mode }) => {
 })
 ```
 
-3.根据截图里的说明信息新建你业务所需的入口、新建并配置 public/manifest.json、配置 package.json 的 scripts
+3. 根据截图里的说明信息新建你业务所需的入口、新建并配置 public/manifest.json、配置 package.json 的 scripts
 
 ![usage](https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr/assets/8949716/55344f19-4c68-4032-9d98-f163225eb82b)
 
 ## 扩展配置
 
-1.如果要新增 iife 脚本，直接新建对应入口，在 package.json 的 script 中添加相应的 build:xxx 即可
+1. 如果要新增 iife 脚本，直接新建对应入口，在 package.json 的 script 中添加相应的 build:xxx 即可
 
-2.插件内部针对 build:page（构建所有页面入口命令）预置了这些入口「popup、options、newtab、side-panel、elements-sidebar-pane、devtools、devtools-panel、history、sandbox、main、update-version」
+2. 插件内部针对 build:page（构建所有页面入口命令）预置了这些入口「popup、options、newtab、side-panel、elements-sidebar-pane、devtools、devtools-panel、history、sandbox、main、update-version」
 
 ![usage](https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr/assets/8949716/b86d5bec-2d29-4296-8893-7f040cf730c1)
 
