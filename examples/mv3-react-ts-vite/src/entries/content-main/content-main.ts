@@ -1,4 +1,4 @@
-import { testChrome } from '../../utils/chrome-utils'
+import { testChrome } from '@/utils/chrome-utils'
 testChrome('content-main')
 
 // @ts-ignore

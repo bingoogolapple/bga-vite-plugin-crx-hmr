@@ -34,23 +34,6 @@ export const getCrxBuildConfig = ({
             [mode]: resolve(viteDirname, `src/entries/${mode}/${mode}.ts`),
         }
     } else if (isIife) {
-        // format 为 iife 时不支持有多个 input
-        // input = { ...iifeInput }
-        // const defaultIifeInput = [
-        //   'content',
-        //   'content-main',
-        //   'content-isolated',
-        //   'inject',
-        //   'user-script',
-        // ]
-        // defaultIifeInput.forEach((key) => {
-        //   const iifePath = resolve(viteDirname, `src/entries/${key}/${key}.ts`)
-        //   if (!input[key] && fs.existsSync(iifePath)) {
-        //     input[key] = iifePath
-        //   }
-        // })
-
-
         input = {
             [iifeName!]: resolve(viteDirname, `src/entries/${iifeName}/${iifeName}.ts`),
         }

@@ -1,6 +1,6 @@
 // 该行为热更新自动生成1707289465453请勿修改
 
-import { testChrome } from '../../utils/chrome-utils'
+import { testChrome } from '@/utils/chrome-utils'
 testChrome('background')
 
 chrome.runtime.onInstalled.addListener(async (data: any) => {

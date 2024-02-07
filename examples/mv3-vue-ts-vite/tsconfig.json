@@ -7,11 +7,15 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowJs": false,
     "noEmit": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "jsx": "preserve",
 
     /* Linting */
@@ -26,6 +30,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/*"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

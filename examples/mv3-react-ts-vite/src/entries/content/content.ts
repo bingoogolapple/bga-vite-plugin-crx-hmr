@@ -3,7 +3,7 @@
 // 这里需要 import 一下 content.css，否则不会被打包
 import './content.css'
 
-import { testChrome } from '../../utils/chrome-utils'
+import { testChrome } from '@/utils/chrome-utils'
 testChrome('content')
 
 // @ts-ignore

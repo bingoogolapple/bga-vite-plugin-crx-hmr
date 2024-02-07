@@ -1,4 +1,4 @@
-import { testChrome } from '../../utils/chrome-utils'
+import { testChrome } from '@/utils/chrome-utils'
 testChrome('devtools')
 
 const port = chrome.runtime.connect()
