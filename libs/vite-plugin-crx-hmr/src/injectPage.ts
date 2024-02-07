@@ -1,4 +1,4 @@
-export const initHmrListener = async () => {
+const initCrxHmrPage = async () => {
   if (chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, _sendResponse) => {
       const pageName = '{pageNamePlaceholder}'
@@ -7,7 +7,7 @@ export const initHmrListener = async () => {
         window.location.reload()
       }
     })
-    chrome.runtime.sendMessage({ mode: 'background', action: 'initCrxHmrWebSocket' })
+    chrome.runtime.sendMessage({ mode: 'background', action: 'initCrxHmr' })
   }
 }
-initHmrListener()
+initCrxHmrPage()

@@ -89,8 +89,8 @@ const clearKeepAliveInterval = () => {
   }
 }
 
-export const initCrxHmrWebSocket = (retryCount: number) => {
-  console.log('background initWebSocketClient::', '初始化 webSocketClient', retryCount)
+const initCrxHmr = (retryCount: number) => {
+  console.log('background initCrxHmr::', '初始化 webSocketClient', retryCount)
 
   hmrWebSocketClient = new WebSocket(
     `ws://127.0.0.1:${crxHmrPort}?mode=background`
@@ -101,17 +101,17 @@ export const initCrxHmrWebSocket = (retryCount: number) => {
   keepAliveIntervalId = setInterval(
     () => {
       if (hmrWebSocketClient) {
-        console.log('background initWebSocketClient::', '发送 keepalive')
+        console.log('background initCrxHmr::', '发送 keepalive')
         hmrWebSocketClient.send('keepalive')
       } else {
         clearKeepAliveInterval()
 
         // 这里只检测 5 次，因为即使这里超过了检测次数，后续手动刷新任意页面时 injectPage.ts 中也会触发重新检测连接开发服务器
         if (retryCount < 5) {
-          console.log('background initWebSocketClient::', '尝试重连')
-          initCrxHmrWebSocket(retryCount + 1)
+          console.log('background initCrxHmr::', '尝试重连')
+          initCrxHmr(retryCount + 1)
         } else {
-          console.log('background initWebSocketClient::', '超过最大次数，不再重连')
+          console.log('background initCrxHmr::', '超过最大次数，不再重连')
         }
       }
     },
@@ -119,10 +119,10 @@ export const initCrxHmrWebSocket = (retryCount: number) => {
   )
 
   hmrWebSocketClient.onopen = (event) => {
-    console.log('background initWebSocketClient::', 'onopen', event)
+    console.log('background initCrxHmr::', 'onopen', event)
   }
   hmrWebSocketClient.onclose = (event) => {
-    console.log('background initWebSocketClient::', 'onclose', event)
+    console.log('background initCrxHmr::', 'onclose', event)
     hmrWebSocketClient = null
   }
 
@@ -130,35 +130,35 @@ export const initCrxHmrWebSocket = (retryCount: number) => {
     const { data } = e
     if (data === 'BACKGROUND_CHANGED') {
       console.log(
-        'background initWebSocketClient::',
+        'background initCrxHmr::',
         '收到更新 background.js 消息，关闭 ws 并重新加载'
       )
       hmrWebSocketClient?.close()
       chrome.runtime.reload()
     } else if (data === 'IIFE_CHANGED') {
       console.log(
-        'background initWebSocketClient::',
+        'background initCrxHmr::',
         '收到更新 iife 消息'
       )
 
       reloadIife(hmrWebSocketClient)
     } else if (data === 'PAGE_CHANGED') {
-      console.log('background initWebSocketClient::', '收到更新页面消息')
+      console.log('background initCrxHmr::', '收到更新 page 消息')
       reloadPage()
     }
   }
 }
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
-  if (request?.mode === 'background' && request?.action === 'initCrxHmrWebSocket') {
+  if (request?.mode === 'background' && request?.action === 'initCrxHmr') {
     if (hmrWebSocketClient) {
       console.log('background', '已经存在 hmrWebSocketClient')
     } else {
       console.log('background', '不存在 hmrWebSocketClient')
       clearKeepAliveInterval()
-      initCrxHmrWebSocket(0)
+      initCrxHmr(0)
     }
   }
 })
 
-initCrxHmrWebSocket(0)
+initCrxHmr(0)

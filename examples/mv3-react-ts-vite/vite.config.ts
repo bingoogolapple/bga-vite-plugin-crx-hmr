@@ -11,11 +11,6 @@ export default defineConfig(async ({ mode }) => {
   console.log('process.env.NODE_ENV', process.env.NODE_ENV, mode)
   const isDev = process.env.NODE_ENV === 'development'
 
-  const crxBuildConfig = getCrxBuildConfig({
-    isDev,
-    mode,
-  })
-
   return {
     define: {
       __DEV__: isDev,
@@ -27,7 +22,10 @@ export default defineConfig(async ({ mode }) => {
     },
     plugins: [react(), crxHmrPlugin({ mode, isDev })],
     build: {
-      ...crxBuildConfig,
+      ...getCrxBuildConfig({
+        isDev,
+        mode,
+      }),
     },
   }
 })

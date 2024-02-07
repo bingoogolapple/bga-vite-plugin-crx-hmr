@@ -11,5 +11,3 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <App />
   </React.StrictMode>
 )
-
-// import '../../../scripts/crx-hmr-plugin/injectPage'

@@ -29,5 +29,3 @@ chrome.runtime.onConnect.addListener((port) => {
 chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {
   console.log('background chrome.runtime.onMessage', message, sender)
 })
-
-// import '../../../scripts/crx-hmr-plugin/injectBackground'
