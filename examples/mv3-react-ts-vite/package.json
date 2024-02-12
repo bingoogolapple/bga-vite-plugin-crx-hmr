@@ -21,15 +21,15 @@
   },
   "devDependencies": {
     "@bgafe/vite-plugin-crx-hmr": "workspace:*",
-    "@types/chrome": "^0.0.259",
-    "@types/node": "^20.11.7",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "@vitejs/plugin-react-swc": "^3.5.0",
+    "@types/chrome": "^0.0.260",
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react-swc": "^3.6.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12"
+    "vite": "^5.1.1"
   }
 }

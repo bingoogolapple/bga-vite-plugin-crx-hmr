@@ -42,9 +42,9 @@ export default defineConfig(async ({ mode }) => {
 
 1. 如果要新增 iife 脚本，直接新建对应入口，在 package.json 的 script 中添加相应的 build:xxx 即可
 
-2. 插件内部针对 build:page（构建所有页面入口命令）预置了这些入口「popup、options、newtab、side-panel、elements-sidebar-pane、devtools、devtools-panel、history、sandbox、main、update-version」
+2. 插件内部针对 build:page（构建所有页面入口命令）预置了这些入口「newtab、history、bookmarks、popup、options、side-panel、devtools、devtools-panel、elements-sidebar-pane、recorder、update-version、sandbox、main」
 
-![usage](https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr/assets/8949716/b86d5bec-2d29-4296-8893-7f040cf730c1)
+![usage](https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr/assets/8949716/d5905e2b-fdfc-48d4-9a2b-f81feda63caa)
 
 如果这些默认页面入口名称不能满足你的业务需求，可在 vite.config.ts 中初始化 crxHmrPlugin 时通过 pageInput 参数指定新的页面入口
 

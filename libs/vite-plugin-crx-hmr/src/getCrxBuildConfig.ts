@@ -41,17 +41,22 @@ export const getCrxBuildConfig = ({
     } else {
         input = { ...pageInput }
         const defaultPageInput = [
+            'newtab',
+            'history',
+            'bookmarks',
+
             'popup',
             'options',
-            'newtab',
             'side-panel',
-            'elements-sidebar-pane',
+
             'devtools',
             'devtools-panel',
-            'history',
+            'elements-sidebar-pane',
+            'recorder',
+
+            'update-version',
             'sandbox',
             'main',
-            'update-version',
         ]
         defaultPageInput.forEach((key) => {
             const pagePath = resolve(viteDirname, `src/entries/${key}/${key}.html`)
