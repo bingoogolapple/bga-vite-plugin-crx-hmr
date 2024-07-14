@@ -13,14 +13,10 @@
     "storage",
     "sidePanel",
     "activeTab",
+    "tabs",
     "scripting",
     "cookies",
-    "history",
-    "contextMenus",
-    "notifications",
-    "alarms",
-    "webRequest",
-    "declarativeContent"
+    "history"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {

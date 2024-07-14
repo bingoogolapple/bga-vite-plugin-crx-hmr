@@ -16,20 +16,20 @@
     "release": "rimraf dist && tsc && cross-env NODE_ENV=production pnpm build"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@bgafe/vite-plugin-crx-hmr": "workspace:*",
-    "@types/chrome": "^0.0.260",
-    "@types/node": "^20.11.17",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
-    "@vitejs/plugin-react-swc": "^3.6.0",
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.1"
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3"
   }
 }

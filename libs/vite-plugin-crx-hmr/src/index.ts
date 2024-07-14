@@ -344,7 +344,7 @@ const crxHmrPlugin = ({ isDev, mode, pageInput }: IProps): PluginOption => {
                         resolve(__dirname, 'injectPage.ts'),
                         'utf-8'
                     )
-                    injectDevCode = injectDevCode.replace('{pageNamePlaceholder}', id.substring(id.lastIndexOf('/') + 1, id.lastIndexOf('.')))
+                    injectDevCode = injectDevCode.replaceAll('{pageNamePlaceholder}', id.substring(id.lastIndexOf('/') + 1, id.lastIndexOf('.')))
                     return code + '\n' + injectDevCode
                 }
             }
