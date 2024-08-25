@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "devWeb": "vite --mode web",
+    "buildWeb": "tsc -b && vite build --mode web",
+    "preview": "vite preview",
     "build": "concurrently \"pnpm:build:*\"",
     "build:background": "vite build --mode background",
     "build:page": "vite build --mode page",

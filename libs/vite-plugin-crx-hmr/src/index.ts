@@ -12,6 +12,7 @@ import {
     // killProcessByPort,
 } from './utils'
 import { getCrxBuildConfig } from './getCrxBuildConfig'
+import { crxWebPlugin } from './crxWebPlugin'
 // import chokidar from 'chokidar'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -256,6 +257,11 @@ interface IProps {
  * 3、打包完成后发消息通知 injectBackground.ts 文件变更
  */
 const crxHmrPlugin = ({ isDev, mode, pageInput }: IProps): PluginOption => {
+    if (mode === 'web') {
+        // 用于前期不涉及浏览器插件特有 API 时当做普通 Web 项目开发来提升开发效率
+        return crxWebPlugin({ isDev, pageInput })
+    }
+
     const { isBackground, isIife, isPage } = parseMode(mode)
 
     // if (isBackground) {
