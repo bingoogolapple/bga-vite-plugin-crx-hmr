@@ -16,18 +16,18 @@
     "release": "rimraf dist && vue-tsc && cross-env NODE_ENV=production pnpm build"
   },
   "dependencies": {
-    "vue": "^3.4.31"
+    "vue": "^3.4.38"
   },
   "devDependencies": {
     "@bgafe/vite-plugin-crx-hmr": "workspace:*",
-    "@types/chrome": "^0.0.268",
-    "@types/node": "^20.14.10",
-    "@vitejs/plugin-vue": "^5.0.5",
+    "@types/chrome": "^0.0.270",
+    "@types/node": "^20.14.15",
+    "@vitejs/plugin-vue": "^5.1.2",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "rimraf": "^6.0.1",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.3",
-    "vue-tsc": "^2.0.26"
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vue-tsc": "^2.0.29"
   }
 }
