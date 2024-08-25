@@ -22,6 +22,12 @@ let checkHeadIntervalId = setInterval(() => {
         temp.setAttribute('type', 'text/javascript')
         temp.src = chrome.runtime.getURL(jsPath)
         document.head.appendChild(temp)
+
+        // 不支持 textContent
+        // var script = document.createElement('script');
+        // script.textContent = 'console.log("content.ts add script");';
+        // document.head.appendChild(script);
+        // script.remove();
     }
 }, 50)
 

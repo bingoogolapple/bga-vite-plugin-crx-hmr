@@ -27,5 +27,10 @@ chrome.runtime.onConnect.addListener((port) => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {
+  if (message?.mode === 'background' && message?.action === 'ping') {
+    // 忽略开发期间 injectPage.ts 发来的 ping 消息
+    return;
+  }
+
   console.log('background chrome.runtime.onMessage', message, sender)
 })

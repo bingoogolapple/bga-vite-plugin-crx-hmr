@@ -76,6 +76,10 @@
   "sandbox": {
     "pages": ["sandbox.html"]
   },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; child-src 'self'; worker-src 'self' blob:;"
+  },
   "omnibox": {
     "keyword": "bga"
   },

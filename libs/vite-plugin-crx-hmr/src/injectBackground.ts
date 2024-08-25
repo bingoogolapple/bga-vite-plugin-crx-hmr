@@ -45,6 +45,7 @@ const reloadIife = async (webSocketClient: WebSocket | null) => {
   if (
     !tab ||
     tab.url?.includes('newtab') ||
+    tab.url?.includes('//extensions/') ||
     tab.url?.includes(chrome.runtime.id)
   ) {
     return
@@ -63,8 +64,12 @@ const reloadIife = async (webSocketClient: WebSocket | null) => {
       args: [],
     },
     (injectionResults) => {
-      for (const frameResult of injectionResults) {
-        console.log('注入刷新页面脚本成功：' + JSON.stringify(frameResult))
+      if (injectionResults) {
+        for (const frameResult of injectionResults) {
+          console.log('注入刷新页面脚本成功：' + JSON.stringify(frameResult))
+        }
+      } else {
+        console.log('注入刷新页面脚本失败', tab)
       }
 
       if (webSocketClient) {
