@@ -7,11 +7,11 @@ const viteDirname = process.cwd()
 
 interface IProps {
   isDev: boolean
-  pageInput?: Record<string, string>
+  pageInput?: string[]
 }
 
-const getWebBuildConfig = ({ isDev, pageInput = {} }: IProps): BuildOptions => {
-  const input: Record<string, string> = { ...pageInput }
+const getWebBuildConfig = ({ isDev, pageInput = [] }: IProps): BuildOptions => {
+  const input: Record<string, string> = {}
   const defaultPageInput = [
     'newtab',
     'history',
@@ -30,7 +30,8 @@ const getWebBuildConfig = ({ isDev, pageInput = {} }: IProps): BuildOptions => {
     'sandbox',
     'main',
   ]
-  defaultPageInput.forEach((key) => {
+  const allPageInput = [...pageInput, ...defaultPageInput]
+  allPageInput.forEach((key) => {
     const pagePath = resolve(viteDirname, `src/entries/${key}/${key}.html`)
     if (!input[key] && fs.existsSync(pagePath)) {
       input[key] = pagePath
@@ -56,12 +57,12 @@ const getWebBuildConfig = ({ isDev, pageInput = {} }: IProps): BuildOptions => {
      * 2、如果为 'inline'，source map 将作为一个 data URI 附加在输出文件中
      * 3、'hidden' 的工作原理与 'true' 相似，只是 bundle 文件中相应的注释将不被保留。浏览器不会自动加载 sourcemap，需要在浏览器的调试控制台中右键 - Add source map
      */
-    sourcemap: false,
+    sourcemap: isDev ? false : true,
     /**
      * 是否清空 outDir
      * 0、默认值为 true
      */
-    emptyOutDir: false,
+    emptyOutDir: true,
     /**
      * 是否启用 CSS 代码拆分。启用代码分割时 content.css 会被内联到 content.js 内部
      * 0、默认值为 true
@@ -76,7 +77,7 @@ const getWebBuildConfig = ({ isDev, pageInput = {} }: IProps): BuildOptions => {
   }
 }
 
-export const crxWebPlugin = ({ isDev, pageInput = {} }: IProps): PluginOption => {
+export const crxWebPlugin = ({ isDev, pageInput = [] }: IProps): PluginOption => {
   return {
     name: '@bgafe/vite-plugin-crx-web',
     enforce: 'pre',
@@ -84,7 +85,7 @@ export const crxWebPlugin = ({ isDev, pageInput = {} }: IProps): PluginOption =>
       return {
         resolve: {
           alias: {
-            '@': resolve(process.cwd(), 'src'),
+            '@': resolve(viteDirname, 'src'),
           },
         },
         css: {

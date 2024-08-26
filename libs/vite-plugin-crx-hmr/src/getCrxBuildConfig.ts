@@ -9,7 +9,7 @@ const viteDirname = process.cwd()
 interface IProps {
     isDev: boolean
     mode: string
-    pageInput?: Record<string, string>
+    pageInput?: string[]
 }
 
 /**
@@ -19,7 +19,7 @@ interface IProps {
 export const getCrxBuildConfig = ({
     isDev,
     mode,
-    pageInput = {},
+    pageInput = [],
 }: IProps): BuildOptions => {
     let input: Record<string, string> = {}
     let format: 'esm' | 'iife' = 'esm'
@@ -39,7 +39,6 @@ export const getCrxBuildConfig = ({
         }
         format = 'iife'
     } else {
-        input = { ...pageInput }
         const defaultPageInput = [
             'newtab',
             'history',
@@ -58,7 +57,8 @@ export const getCrxBuildConfig = ({
             'sandbox',
             'main',
         ]
-        defaultPageInput.forEach((key) => {
+        const allPageInput = [...pageInput, ...defaultPageInput]
+        allPageInput.forEach((key) => {
             const pagePath = resolve(viteDirname, `src/entries/${key}/${key}.html`)
             if (!input[key] && fs.existsSync(pagePath)) {
                 input[key] = pagePath
@@ -87,7 +87,7 @@ export const getCrxBuildConfig = ({
          */
         sourcemap: false,
         /**
-         * 是否清空 outDir
+         * 是否清空 outDir。这里不能配置为清空，否则会因为同时通过多个 npm script 指定不同 mode 启动导致互相清空
          * 0、默认值为 true
          */
         emptyOutDir: false,

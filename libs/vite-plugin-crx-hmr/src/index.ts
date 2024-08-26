@@ -247,7 +247,7 @@ const initWebSocketClient = (mode: string) => {
 interface IProps {
     isDev: boolean
     mode: string
-    pageInput?: Record<string, string>
+    pageInput?: string[]
 }
 
 /**

@@ -44,7 +44,7 @@ export default defineConfig(async ({ mode }) => {
 
 2. 插件内部针对 build:page（构建所有页面入口命令）预置了这些入口「newtab、history、bookmarks、popup、options、side-panel、devtools、devtools-panel、elements-sidebar-pane、recorder、update-version、sandbox、main」
 
-![usage](https://github.com/bingoogolapple/bga-vite-plugin-crx-hmr/assets/8949716/d5905e2b-fdfc-48d4-9a2b-f81feda63caa)
+![usage](https://github.com/user-attachments/assets/3fa8e298-a0c6-4fde-aaef-8e80bc6b89e2)
 
 如果这些默认页面入口名称不能满足你的业务需求，可在 vite.config.ts 中初始化 crxHmrPlugin 时通过 pageInput 参数指定新的页面入口
 
@@ -64,9 +64,8 @@ export default defineConfig(async ({ mode }) => {
         mode,
         isDev,
         // 通过 pageInput 增加新的页面入口
-        pageInput: {
-          page1: resolve(process.cwd(), 'src/entries/page1/page1.html'),
-        },
+        // 仅需指定页面名称记录，例如指定 ['page1']，则插件内部会自动添加 resolve(process.cwd(), 'src/entries/page1/page1.html')
+        pageInput: ['page1', 'page2'],
       }),
     ],
   }
