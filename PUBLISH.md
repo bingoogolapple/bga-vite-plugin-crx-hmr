@@ -48,9 +48,15 @@ pnpm type-check && pnpm build && pnpm publish --no-git-checks
 
 自动发布由 `.github/workflows/release.yml` 驱动，每次 push 到 `main` 分支时触发。
 
-### 前提条件：配置 Secrets
+### 前提条件
 
-在 GitHub 仓库的 **Settings → Secrets and variables → Actions → Repository secrets** 中添加：
+#### 配置 GitHub Actions
+
+- 在 GitHub 仓库的 **Settings → Actions → General → Workflow permissions** 中勾选 **Allow GitHub Actions to create and approve pull requests**
+
+#### 配置 Secrets
+
+- 在 GitHub 仓库的 **Settings → Secrets and variables → Actions → Repository secrets** 中添加：
 
 | Secret 名称 | 说明 |
 |---|---|
