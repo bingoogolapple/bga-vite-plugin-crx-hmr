@@ -5,6 +5,4 @@ import App from './App'
 import { testChrome } from '@/utils/chrome-utils'
 testChrome('sandbox')
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <App />
-)
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />)

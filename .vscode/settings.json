@@ -1,4 +1,4 @@
 {
-  "prettier.singleQuote": true,
-  "prettier.semi": false
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

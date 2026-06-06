@@ -9,15 +9,7 @@
     "48": "images/48.png",
     "128": "images/128.png"
   },
-  "permissions": [
-    "storage",
-    "sidePanel",
-    "activeTab",
-    "tabs",
-    "scripting",
-    "cookies",
-    "history"
-  ],
+  "permissions": ["storage", "sidePanel", "activeTab", "tabs", "scripting", "cookies", "history"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",

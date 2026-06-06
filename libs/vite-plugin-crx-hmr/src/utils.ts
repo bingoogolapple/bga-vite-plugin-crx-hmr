@@ -1,94 +1,53 @@
-import child_process from 'child_process'
-import fs from 'fs'
-import type { IncomingMessage } from 'http'
+import fs from 'node:fs'
+import type { IncomingMessage } from 'node:http'
 
-export const killProcessByPort = (port: number) => {
-    var lsofCommand = child_process.spawn('lsof', [
-        '-i',
-        `:${port}`,
-    ])
-    lsofCommand.stdout.on('data', rst => {
-        const data = rst.toString('utf8', 0, rst.length)
-        let pid: string | null = null
-        data.split(/[\n|\r]/).forEach((item: string) => {
-            if (item.indexOf('LISTEN') !== -1 && !pid) {
-                const reg = item.split(/\s+/)
-                if (/\d+/.test(reg[1])) {
-                    pid = reg[1]
-                }
-            }
-        })
-        if (!pid) {
-            console.log(`无进程暂用端口 ${port}`)
-            return
-        }
-        child_process.exec(`kill -9 ${pid}`, (_error, _stdout, _stderr) => {
-            console.log(`关闭端口 ${port} 占用的进程 ${pid}`)
-        })
-    })
-    lsofCommand.stderr.on('data', rst => {
-        const data = rst.toString('utf8', 0, rst.length)
-        console.log(`查询占用端口 ${port} 的进程失败`, data)
-    })
-}
+const VALID_BASE_MODES = ['iife', 'background', 'page', 'web']
+
+/** iife 模式下的 name 来源，通过环境变量 CRX_IIFE_NAME 指定，如 CRX_IIFE_NAME=content */
+export const getIifeName = (): string | undefined => process.env.CRX_IIFE_NAME || undefined
 
 export const deleteFolderRecursive = (path: string) => {
-    if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(file => {
-            const curPath = `${path}/${file}`
-            if (fs.lstatSync(curPath).isDirectory()) {
-                // 递归删除文件夹
-                deleteFolderRecursive(curPath)
-            } else {
-                // 删除文件
-                if (fs.existsSync(curPath)) {
-                    fs.unlinkSync(curPath)
-                }
-            }
-        })
-        // 删除文件夹
-        if (fs.existsSync(path)) {
-            fs.rmdirSync(path)
-        }
-    }
+  fs.rmSync(path, { recursive: true, force: true })
 }
 
 export const copyFolderRecursive = (src: string, dest: string) => {
-    fs.mkdirSync(dest, { recursive: true })
-    fs.readdirSync(src).forEach(file => {
-        const srcFile = `${src}/${file}`
-        const destFile = `${dest}/${file}`
-        if (fs.lstatSync(srcFile).isDirectory()) {
-            copyFolderRecursive(srcFile, destFile)
-        } else {
-            fs.copyFileSync(srcFile, destFile)
-        }
-    })
+  fs.cpSync(src, dest, { recursive: true })
 }
 
-export const getQueryString = (req: IncomingMessage, name: string) => {
-    const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
-    const r = req.url?.substring(2).match(reg)
-    if (r != null) {
-        return decodeURIComponent(r[2])
-    }
+export const getQueryString = (req: IncomingMessage, name: string): string | null => {
+  if (!req.url) {
     return null
+  }
+  try {
+    // req.url 形如 "/?mode=background" 或 "?mode=background"，需要补全 base 才能解析
+    const url = new URL(req.url, 'http://localhost')
+    return url.searchParams.get(name)
+  } catch {
+    return null
+  }
 }
 
+/**
+ * 解析 Vite mode 参数
+ *
+ * 支持的格式：
+ * - "background" / "page" / "web"
+ * - "iife"（需配合 CRX_IIFE_NAME 环境变量使用，如 cross-env CRX_IIFE_NAME=content vite build --mode iife）
+ */
 export const parseMode = (mode: string) => {
-    let isIife = false
-    let isBackground = false
-    let isPage = false
-    if (['iife'].includes(mode)) {
-      isIife = true
-    } else if (['background'].includes(mode)) {
-      isBackground = true
-    } else {
-      isPage = true
-    }
-    return {
-      isIife,
-      isBackground,
-      isPage,
-    }
+  if (!mode || !VALID_BASE_MODES.includes(mode)) {
+    throw new Error(
+      `[vite-plugin-crx-hmr] Invalid mode "${mode}". Expected one of: ${VALID_BASE_MODES.join(', ')}`,
+    )
   }
+
+  const isIife = mode === 'iife'
+  const isBackground = mode === 'background'
+  const isPage = mode === 'page'
+
+  return {
+    isIife,
+    isBackground,
+    isPage,
+  }
+}

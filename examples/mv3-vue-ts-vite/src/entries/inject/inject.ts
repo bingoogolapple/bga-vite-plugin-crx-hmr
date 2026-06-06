@@ -1,9 +1,9 @@
 import { testChrome } from '@/utils/chrome-utils'
 testChrome('inject')
 
-// @ts-ignore
+// @ts-expect-error - Chrome extension content script injection - Chrome extension content script injection
 console.log('inject window.testName', window.testName)
-// @ts-ignore
+// @ts-expect-error - Chrome extension content script injection - Chrome extension content script injection
 window.testName = 'content'
 
 const doc = document.documentElement

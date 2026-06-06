@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "bingoogolapple/bga-vite-plugin-crx-hmr" }
+  ],
+  "commit": false,
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["mv3-react-ts-vite", "mv3-vue-ts-vite"]
+}

@@ -31,11 +31,7 @@ function App() {
           <li key={item}>{item}</li>
         ))}
       </ul>
-      <iframe
-        src={chrome.runtime.getURL('sandbox.html')}
-        width="400"
-        height="400"
-      ></iframe>
+      <iframe src={chrome.runtime.getURL('sandbox.html')} width="400" height="400"></iframe>
     </div>
   )
 }

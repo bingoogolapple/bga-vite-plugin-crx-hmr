@@ -13,13 +13,13 @@ const testWebWorker = (name: string) => {
     };
   `
   // 创建一个新的 Blob 对象，其中包含你要执行的代码
-  var blob = new Blob([workerScript], { type: 'application/javascript' })
+  const blob = new Blob([workerScript], { type: 'application/javascript' })
 
   // 创建一个指向 Blob 对象的 URL
-  var blobURL = URL.createObjectURL(blob)
+  const blobURL = URL.createObjectURL(blob)
 
   // 创建一个新的 Worker，并指向 Blob URL
-  var worker = new Worker(blobURL)
+  const worker = new Worker(blobURL)
 
   // 向 Worker 发送要执行的代码
   worker.postMessage('2 + 2')

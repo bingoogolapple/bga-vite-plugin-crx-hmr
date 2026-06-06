@@ -3,30 +3,14 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "moduleResolution": "Node",
+    "lib": ["ESNext"],
+    "moduleResolution": "Bundler",
     "strict": true,
-    "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
     "noEmit": true,
     "noImplicitReturns": true,
-    "skipLibCheck": true,
-    "types": [
-      "vite/client",
-      "chrome"
-    ],
+    "skipLibCheck": true
   },
-  "include": [
-    "src"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+  "include": ["src", "tsdown.config.ts"]
 }

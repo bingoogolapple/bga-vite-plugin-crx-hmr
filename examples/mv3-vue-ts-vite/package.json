@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "devWeb": "vite --mode web",
-    "buildWeb": "tsc -b && vite build --mode web",
+    "buildWeb": "vite build --mode web",
     "preview": "vite preview",
     "build": "concurrently \"pnpm:build:*\"",
     "build:background": "vite build --mode background",
@@ -15,22 +15,23 @@
     "build:content-isolated": "cross-env CRX_IIFE_NAME=content-isolated vite build --mode iife",
     "build:inject": "cross-env CRX_IIFE_NAME=inject vite build --mode iife",
     "build:user-script": "cross-env CRX_IIFE_NAME=user-script vite build --mode iife",
-    "dev": "rimraf dist && vue-tsc && cross-env NODE_ENV=development pnpm build",
-    "release": "rimraf dist && vue-tsc && cross-env NODE_ENV=production pnpm build"
+    "dev": "rimraf dist && cross-env NODE_ENV=development pnpm build",
+    "release": "rimraf dist && cross-env NODE_ENV=production pnpm build",
+    "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "vue": "^3.4.38"
+    "vue": "^3.5.35"
   },
   "devDependencies": {
     "@bgafe/vite-plugin-crx-hmr": "workspace:*",
-    "@types/chrome": "^0.0.270",
-    "@types/node": "^20.14.15",
-    "@vitejs/plugin-vue": "^5.1.2",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.2",
-    "vue-tsc": "^2.0.29"
+    "@types/chrome": "^0.1.42",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "concurrently": "^10.0.3",
+    "cross-env": "^10.1.0",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vue-tsc": "^3.3.3"
   }
 }

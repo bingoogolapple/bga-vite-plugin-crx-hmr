@@ -1,0 +1,58 @@
+# CI 工作流：代码质量检查与构建验证
+# 触发时机：
+#   - push 到 main/master 分支时
+#   - 向 main/master 分支提交 Pull Request 时
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 与 package.json engines 字段保持一致，要求 Node.js >=24.16.0
+        node-version: [24.16.0]
+
+    steps:
+      # 拉取完整仓库代码
+      - uses: actions/checkout@v4
+
+      # 安装指定版本的 pnpm 包管理器
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.2
+
+      # 安装 Node.js 并启用 pnpm 缓存，加速依赖安装
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      # 严格按照 pnpm-lock.yaml 安装依赖，确保 CI 环境与本地一致
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ESLint 静态代码检查
+      - name: Lint
+        run: pnpm lint
+
+      # Prettier 格式检查（只检查不修改）
+      - name: Format check
+        run: pnpm format:check
+
+      # TypeScript 类型检查（不生成产物）
+      - name: Type check
+        run: pnpm type-check
+
+      # 单元测试
+      - name: Test
+        run: pnpm test
+
+      # 构建产物，验证 tsdown 打包流程是否正常
+      - name: Build
+        run: pnpm build

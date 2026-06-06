@@ -2,5 +2,52 @@
   "name": "bga-vite-plugin-crx-hmr",
   "private": true,
   "version": "1.0.0",
-  "description": "用于开发 Chromium 插件的 Vite 插件"
+  "type": "module",
+  "description": "用于开发 Chromium 插件的 Vite 插件",
+  "engines": {
+    "node": ">=24.16.0"
+  },
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "dev:plugin": "pnpm --filter @bgafe/vite-plugin-crx-hmr dev",
+    "local-release:plugin": "pnpm --filter @bgafe/vite-plugin-crx-hmr release",
+    "dev:react": "pnpm --filter mv3-react-ts-vite dev",
+    "release:react": "pnpm --filter mv3-react-ts-vite release",
+    "dev:vue": "pnpm --filter mv3-vue-ts-vite dev",
+    "release:vue": "pnpm --filter mv3-vue-ts-vite release",
+    "type-check": "pnpm --filter @bgafe/vite-plugin-crx-hmr type-check",
+    "test": "pnpm --filter @bgafe/vite-plugin-crx-hmr test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "build": "pnpm --filter @bgafe/vite-plugin-crx-hmr build",
+    "release": "pnpm build && changeset publish",
+    "clean": "pnpm -r exec rm -rf node_modules dist && rm -rf node_modules",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css,html}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.7.0",
+    "@changesets/cli": "^2.31.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.8.3",
+    "typescript-eslint": "^8.60.1"
+  }
 }

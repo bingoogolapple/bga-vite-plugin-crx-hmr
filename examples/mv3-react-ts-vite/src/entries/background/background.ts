@@ -7,8 +7,8 @@ chrome.runtime.onInstalled.addListener(async (data: any) => {
   console.log('onInstalled 参数', JSON.stringify(data))
   // {"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"}
   if (data.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    let url = chrome.runtime.getURL('options.html')
-    let tab = await chrome.tabs.create({ url })
+    const url = chrome.runtime.getURL('options.html')
+    const tab = await chrome.tabs.create({ url })
     console.log(`background 安装完后打开选项 tab ${JSON.stringify(tab)}`)
 
     // 也可以直接使用 api 打开选项页面
@@ -29,7 +29,7 @@ chrome.runtime.onConnect.addListener((port) => {
 chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {
   if (message?.mode === 'background' && message?.action === 'ping') {
     // 忽略开发期间 injectPage.ts 发来的 ping 消息
-    return;
+    return
   }
 
   console.log('background chrome.runtime.onMessage', message, sender)

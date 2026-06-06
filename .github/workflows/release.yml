@@ -1,0 +1,65 @@
+# 发布工作流：使用 Changesets 管理版本号并自动发布到 npm
+# 触发时机：每次 push 到 main 分支时执行
+#
+# 工作原理（changesets/action 的两种行为）：
+#   1. 若 .changeset/ 目录中存在未处理的 changeset 文件
+#      → 自动创建/更新一个「Version Packages」PR
+#        该 PR 包含版本号更新（package.json）和 CHANGELOG 变更
+#   2. 若「Version Packages」PR 被合并到 main
+#      → 执行 publish 命令（pnpm release）：构建产物并发布包到 npm
+#        同时在 GitHub 上打对应版本的 Tag
+#
+# 所需 Secrets（在仓库 Settings → Secrets and variables → Actions 中配置）：
+#   - NPM_TOKEN：npmjs.com 上生成的 Automation 类型 Access Token，用于发布包
+#   - GITHUB_TOKEN：由 GitHub Actions 自动注入，无需手动配置
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# 防止同一分支并发执行多个 release 任务，避免版本冲突
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      # 允许创建/更新「Version Packages」PR 以及打 Tag
+      contents: write
+      # 允许创建和更新 Pull Request
+      pull-requests: write
+      # 用于 npm provenance（证明包由 CI 构建，提升供应链安全）
+      id-token: write
+
+    steps:
+      # 拉取完整仓库代码
+      - uses: actions/checkout@v4
+
+      # 安装指定版本的 pnpm 包管理器
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.2
+
+      # 安装 Node.js 并启用 pnpm 缓存，加速依赖安装
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: 'pnpm'
+
+      # 严格按照 pnpm-lock.yaml 安装依赖，确保 CI 环境与本地一致
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 核心步骤：由 changesets/action 决定是创建 PR 还是执行发布
+      #   version: 更新版本号命令（pnpm version-packages → changeset version）
+      #   publish: 实际发布命令（pnpm release → pnpm build && changeset publish）
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm version-packages
+          publish: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

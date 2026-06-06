@@ -9,12 +9,9 @@ function App() {
     const onMessage = (event: MessageEvent) => {
       console.log('子页面收到消息', event)
       setTimeout(() => {
-        event.source?.postMessage(
-          `我是来自子页面回复的消息 ${eval(`1 + 1 + 1`)}`,
-          {
-            targetOrigin: '*',
-          }
-        )
+        event.source?.postMessage(`我是来自子页面回复的消息 ${eval(`1 + 1 + 1`)}`, {
+          targetOrigin: '*',
+        })
       }, 2000)
     }
 
