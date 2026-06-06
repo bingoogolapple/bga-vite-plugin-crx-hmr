@@ -55,8 +55,12 @@ jobs:
       # 是否已发布时依赖官方源的响应格式，镜像源返回的数据格式不兼容会导致
       # isAlreadyPublishedError 解析出错（TypeError: Cannot read properties of
       # undefined (reading 'includes')），因此在发布前强制覆盖为官方源
+      # 注意：必须同时覆盖项目级 .npmrc（pnpm 优先读取项目级配置，npm config set
+      # 只写入用户级 ~/.npmrc，对 pnpm 不生效）
       - name: Set npm registry to official for publishing
-        run: npm config set registry https://registry.npmjs.org/
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          sed -i 's|registry=.*|registry=https://registry.npmjs.org/|' .npmrc
 
       # 核心步骤：由 changesets/action 决定是创建 PR 还是执行发布
       #   version: 更新版本号命令（pnpm version-packages → changeset version）
