@@ -9,7 +9,7 @@
 #      → 执行 publish 命令（pnpm release）：构建产物并发布包到 npm
 #        同时在 GitHub 上打对应版本的 Tag
 #
-# 所需 Secrets（在仓库 Settings → Secrets and variables → Actions 中配置）：
+# 所需 Secrets（在仓库 Settings → Secrets and variables → Actions → Repository secrets 中配置）：
 #   - NPM_TOKEN：npmjs.com 上生成的 Automation 类型 Access Token，用于发布包
 #   - GITHUB_TOKEN：由 GitHub Actions 自动注入，无需手动配置
 name: Release
@@ -50,6 +50,13 @@ jobs:
       # 严格按照 pnpm-lock.yaml 安装依赖，确保 CI 环境与本地一致
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # .npmrc 中配置了淘宝镜像源用于本地加速，但 changeset publish 在查询包
+      # 是否已发布时依赖官方源的响应格式，镜像源返回的数据格式不兼容会导致
+      # isAlreadyPublishedError 解析出错（TypeError: Cannot read properties of
+      # undefined (reading 'includes')），因此在发布前强制覆盖为官方源
+      - name: Set npm registry to official for publishing
+        run: npm config set registry https://registry.npmjs.org/
 
       # 核心步骤：由 changesets/action 决定是创建 PR 还是执行发布
       #   version: 更新版本号命令（pnpm version-packages → changeset version）
