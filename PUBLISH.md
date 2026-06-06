@@ -7,6 +7,10 @@
 
 ---
 
+### 零、前提条件
+
+在 [npmjs.com → Access Tokens](https://www.npmjs.com/settings/~/tokens) 中生成 NPM_TOKEN，需要勾选「Bypass two-factor authentication (2FA)」否则会 403
+
 ## 一、本地快速发布（绕过 Changesets）
 
 不走 Changesets 流程，**不会自动生成 CHANGELOG**，需手动修改版本号。
@@ -16,7 +20,9 @@
 已登录 npm 账号：
 
 ```bash
-npm login --registry https://registry.npmjs.org
+pnpm login --registry https://registry.npmjs.org
+
+pnpm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
 ```
 
 ### 操作步骤
@@ -48,7 +54,7 @@ pnpm type-check && pnpm build && pnpm publish --no-git-checks
 
 | Secret 名称 | 说明 |
 |---|---|
-| `NPM_TOKEN` | 在 [npmjs.com → Access Tokens](https://www.npmjs.com/settings/~/tokens) 中生成，类型选 **Automation** |
+| `NPM_TOKEN` | 参考上方「零、前提条件」 |
 | `GITHUB_TOKEN` | GitHub Actions 自动注入，**无需手动配置** |
 
 > **注意**：必须添加到 **Repository secrets**，而非 Environment secrets。`release.yml` 中的 job 未绑定任何 `environment`，Environment secrets 对其不可见。
